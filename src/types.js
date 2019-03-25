@@ -18,11 +18,11 @@ export type GalleryProps = {
     /**
      * 自定义尾部
      */
-    renderFooter?:(data:GalleryData,index: Number) => React.ReactElement<any>,
+    renderFooter?:(index: Number) => React.ReactElement<any>,
     /**
      * 自定义头部
      */
-    renderHeader?:(data:GalleryData,index: Number,) => React.ReactElement<any>,
+    renderHeader?:(index: Number,) => React.ReactElement<any>,
 
     /**
      * 内容页面渲染
@@ -32,7 +32,7 @@ export type GalleryProps = {
     /**
      * 是否显示加载动画
      */
-    showIndicator?:Boolean,
+    renderIndicator?:(data:GalleryData,index: Number,) => React.ReactElement<any>,
 
     /**
      * 当内容切换时触发
@@ -82,6 +82,7 @@ export type GalleryData = {
      *  是否可以缩放，默认true
      */
     zoomEnable?:Boolean,
+
 
 }
 
@@ -144,20 +145,6 @@ export const GalleryFileType = {
     video: 1,
 }
 
-export const SwipeDirectionType = {
-    /**
-     * 未滑动
-     */
-    none:0,
-    /**
-     * 向左滑
-     */
-    left:-1,
-    /**
-     * 向右滑
-     */
-    right:1,
-}
 
 
 export const GestureType = {
@@ -196,3 +183,9 @@ export type ICenterOn = {
     scale: number,
     duration: number,
 }
+
+export type Position = {
+    x:number,
+    y:number,
+}
+

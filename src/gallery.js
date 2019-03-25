@@ -1,19 +1,14 @@
 import * as React from 'react';
 import {
-    Animated,
-    Dimensions,
     View,
     StyleSheet,
     ScrollView,
-    ImageBackground,
     Image,
-    Platform,
-    I18nManager
+    ActivityIndicator
 } from 'react-native';
-import {GalleryProps, SwipeDirectionType} from './types';
+import {GalleryProps, GalleryFileType} from './types';
 import ZoomView from './zoomView';
 import Scroller from 'react-native-scroller';
-import {createResponder} from 'react-native-gesture-responder';
 
 const MIN_FLING_VELOCITY = 0.5;
 
@@ -24,95 +19,103 @@ export default class GalleryViewer extends React.Component<GalleryProps> {
         dataSource: null,
         maximumZoomScale: 2.5,
         minimumZoomScale: 1,
-        zoomEnable: true
+        zoomEnable: true,
     }
 
     constructor(props) {
         super(props)
         this.currentPage = 0;
-        this.state = {
-            contentWidth: 0,
-            contentHeight: 0,
-        }
-        // this.gestureResponder = createResponder({
-        //     onStartShouldSetResponder: (evt, gestureState) => true,
-        //     onResponderTerminationRequest: () => false,
-        //     onResponderGrant: this.onResponderGrant.bind(this),
-        //     onResponderMove: this.onResponderMove.bind(this),
-        //     onResponderRelease: this.onResponderRelease.bind(this),
-        //     onResponderTerminate: this.onResponderRelease.bind(this)
-        // });
-        this.scroller = new Scroller(true, (dx, dy, scroller) => {
-            if (dx === 0 && dy === 0 && scroller.isFinished()) {
+        this.contentSize = new Map();
+        this.imagesRef = new Map();
 
-            } else {
+        this.state = {
+            containerWidth: 0,
+            containerHeight: 0,
+        }
+        this.scroller = new Scroller(true, (dx, dy, scroller) => {
+            if (!(dx === 0 && dy === 0 && scroller.isFinished()) && this._mount) {
                 const curX = this.scroller.getCurrX();
                 this.scroll.scrollTo({x: curX, animated: false});
             }
         });
+        this._scrollToX = this._scrollToX.bind(this)
+        this._scrollToIndex = this._scrollToIndex.bind(this)
     }
 
-
-    onResponderGrant(evt, gestureState) {
-        // this.scroller.forceFinished(true);
+    componentDidMount() {
+        this._mount = true;
+        this.fetchContentSize(this.props.dataSource)
     }
 
-    // onResponderMove(evt, gestureState) {
-    //     let dx = gestureState.moveX - gestureState.previousMoveX;
-    //     this.scrollByOffset(dx);
-    // }
+    componentWillUnmount() {
+        this._mount = false;
+        this.contentSize.clear()
+    }
 
-    onResponderRelease(evt, gestureState, disableSettle) {
-        if (!disableSettle) {
-            this.settlePage(gestureState.vx);
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.initIndex != this.currentPage) {
+            this._scrollToIndex(nextProps.initIndex, false)
+        }
+        else if (nextProps.dataSource != this.props.dataSource) {
+            this.fetchContentSize(nextProps.dataSource)
         }
     }
-
-    // scrollByOffset(dx) {
-    //     this.scroller.startScroll(this.scroller.getCurrX(), 0, -dx, 0, 0);
-    // }
 
     get pageCount() {
         return this.props.dataSource.length || 0
     }
 
-    settlePage(vx) {
-        if (vx < -MIN_FLING_VELOCITY) {
-            if (this.currentPage < this.pageCount - 1) {
-                this.flingToPage(this.currentPage + 1, vx);
-            } else {
-                this.flingToPage(this.pageCount - 1, vx);
-            }
-        } else if (vx > MIN_FLING_VELOCITY) {
-            if (this.currentPage > 0) {
-                this.flingToPage(this.currentPage - 1, vx);
-            } else {
-                this.flingToPage(0, vx);
-            }
-        } else {
-            let page = this.currentPage;
-            let progress = (this.scroller.getCurrX() - this.getScrollOffsetOfPage(this.currentPage)) / this.state.contentWidth;
-            if (progress > 1 / 3) {
-                page += 1;
-            } else if (progress < -1 / 3) {
-                page -= 1;
-            }
-            page = Math.min(this.pageCount - 1, page);
-            page = Math.max(0, page);
-            this.scrollToPage(page);
+    get containerSize() {
+        return {
+            width: this.state.containerWidth,
+            height: this.state.containerHeight
         }
     }
 
-    onPageChanged(page) {
+    /**
+     * 获取内容size
+     * @param dataSource
+     */
+    fetchContentSize(dataSource) {
+        this.contentSize.clear()
+        dataSource.forEach((item, index) => {
+            if (item.type === GalleryFileType.image) {
+                Image.getSize(item.url, (width, height) => {
+                    this.contentSize.set(index, {width, height})
+                })
+            }
+        })
+    }
+
+    /**
+     * 获取对应的内容size
+     * @param index
+     * @returns {V | undefined | *}
+     */
+    contentSizeByIndex(index) {
+        return this.contentSize.get(index) || this.containerSize
+    }
+
+    /**
+     * 手势开始
+     * @private
+     */
+    _onResponderGrant() {
+        this.scroller.forceFinished(true);
+    }
+
+    _onPageChanged(page) {
         if (this.currentPage !== page) {
+            const lastPage = this.currentPage;
             this.currentPage = page
+            this.props.onChange && this.props.onChange(page)
+            this.imagesRef.get(lastPage) && this.imagesRef.get(lastPage)._reset()
         }
     }
 
-
-    flingToPage(page, velocityX) {
+    _flingToPage(page, velocityX) {
         page = this.validPage(page);
-        this.onPageChanged(page);
+        this._onPageChanged(page);
 
         velocityX *= -1000; //per sec
         const finalX = this.getScrollOffsetOfPage(page);
@@ -121,11 +124,11 @@ export default class GalleryViewer extends React.Component<GalleryProps> {
     }
 
     getScrollOffsetOfPage(page) {
-        return page * this.state.contentWidth;
+        return page * this.state.containerWidth;
     }
 
     validPage(page) {
-        page = Math.min(this.props.dataSource.length - 1, page);
+        page = Math.min(this.pageCount - 1, page);
         page = Math.max(0, page);
         return page;
     }
@@ -138,8 +141,8 @@ export default class GalleryViewer extends React.Component<GalleryProps> {
     _onScrollLayout = (event) => {
         const {layout: {width, height}} = event.nativeEvent;
         this.setState({
-            contentWidth: width,
-            contentHeight: height,
+            containerWidth: width,
+            containerHeight: height,
         }, () => {
             setTimeout(() => {
                 this._scrollToIndex(this.props.initIndex, true)
@@ -156,27 +159,25 @@ export default class GalleryViewer extends React.Component<GalleryProps> {
 
         if (vx < -MIN_FLING_VELOCITY) {
             if (this.currentPage < this.pageCount - 1) {
-                this.flingToPage(this.currentPage + 1, vx);
+                this._flingToPage(this.currentPage + 1, vx);
             } else {
-                this.flingToPage(this.pageCount - 1, vx);
+                this._flingToPage(this.pageCount - 1, vx);
             }
         } else if (vx > MIN_FLING_VELOCITY) {
             if (this.currentPage > 0) {
-                this.flingToPage(this.currentPage - 1, vx);
+                this._flingToPage(this.currentPage - 1, vx);
             } else {
-                this.flingToPage(0, vx);
+                this._flingToPage(0, vx);
             }
         } else {
             let page = this.currentPage;
-            let progress = (this.scroller.getCurrX() - this.getScrollOffsetOfPage(this.currentPage)) / this.state.contentWidth;
+            let progress = (this.scroller.getCurrX() - this.getScrollOffsetOfPage(this.currentPage)) / this.state.containerWidth;
             if (progress > 1 / 3) {
                 page += 1;
             } else if (progress < -1 / 3) {
                 page -= 1;
             }
-            page = Math.min(this.pageCount - 1, page);
-            page = Math.max(0, page);
-            this._scrollToIndex(page);
+            this._scrollToIndex(this.validPage(page));
         }
     }
 
@@ -199,7 +200,7 @@ export default class GalleryViewer extends React.Component<GalleryProps> {
      */
     _scrollToIndex(page, immediate) {
         page = this.validPage(page);
-        this.onPageChanged(page);
+        this._onPageChanged(page);
 
         const finalX = this.getScrollOffsetOfPage(page);
         if (immediate) {
@@ -207,25 +208,36 @@ export default class GalleryViewer extends React.Component<GalleryProps> {
         } else {
             this.scroller.startScroll(this.scroller.getCurrX(), 0, finalX - this.scroller.getCurrX(), 0, 400);
         }
-
     }
 
-    componentWillReceiveProps(nextProps) {
-        if (nextProps.initIndex != this.currentPage) {
-            this._scrollToIndex(nextProps.initIndex, false)
-        }
-    }
 
     renderItem(item, index) {
-
         if (this.props.renderItem) {
             let data = Object.assign({}, item)
             data.source = {uri: item.url};
-            data.style = {width: this.state.contentWidth, height: this.state.contentHeight}
+            data.style = {width: this.state.containerWidth, height: this.state.containerHeight}
             return this.props.renderItem(data, index)
         }
-        return <Image style={{width: this.state.contentWidth, height: this.state.contentHeight}}
+        return <Image style={{width: this.state.containerWidth, height: this.state.containerHeight}}
                       source={{uri: item.url}}/>
+    }
+
+    renderLodaing(item,index) {
+        return <View pointerEvents='none' style={styles.loading}>
+            { this.props.renderIndicator(item,index)}
+        </View>
+    }
+
+    renderFooter(){
+        return <View pointerEvents='none' style={styles.footer}>
+            { this.props.renderFooter(this.currentPage)}
+        </View>
+    }
+
+    renderHeader(){
+        return <View pointerEvents='none' style={styles.header}>
+            { this.props.renderHeader(this.currentPage)}
+        </View>
     }
 
     render() {
@@ -245,21 +257,20 @@ export default class GalleryViewer extends React.Component<GalleryProps> {
                             showsHorizontalScrollIndicator={false}
                             showsVerticalScrollIndicator={false}>
                     {this.props.dataSource && this.props.dataSource.map((item, index) => {
-
                         return <ZoomView
                             key={index}
+                            ref={(refs) => {
+                                this.imagesRef.set(index, refs)
+                            }}
                             style={styles.content}
-                            cropWidth={this.state.contentWidth}
-                            cropHeight={this.state.contentHeight}
-                            imageWidth={this.state.contentWidth}
-                            imageHeight={this.state.contentHeight}
+                            contentAspectRatio={this.contentSizeByIndex(index).width / this.contentSizeByIndex(index).height}
                             maxOverflow={this.props.maxOverflow}
-                            onResponderGrant={this.onResponderGrant.bind(this)}
+                            onResponderGrant={this._onResponderGrant.bind(this)}
                             horizontalOuterRangeOffset={(offset) => {
                                 this._scrollToX(offset)
                             }}
                             onDoubleClick={this.props.onDoubleClick}
-                            enableSwipeDown={this.props.zoomEnable}
+                            zoomEnable={this.props.zoomEnable}
                             swipeDownThreshold={this.props.swipeDownThreshold}
                             onSwipeDown={(vx) => {
                                 this._onSwipeDown(vx)
@@ -268,9 +279,12 @@ export default class GalleryViewer extends React.Component<GalleryProps> {
                             enableDoubleClickZoom={this.props.zoomEnable}
                             doubleClickInterval={this.props.doubleClickInterval}>
                             {this.renderItem(item, index)}
+                            {this.props.renderIndicator && this.renderLodaing(item,index)}
                         </ZoomView>
                     })}
                 </ScrollView>
+                {this.props.renderHeader && this.renderHeader()}
+                {this.props.renderFooter && this.renderFooter()}
             </View>
         )
 
@@ -285,6 +299,32 @@ const styles = StyleSheet.create({
     content: {
         justifyContent: 'center',
         alignItems: 'center',
+    },
+    loading: {
+        flex: 1,
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        top: 0,
+        bottom: 0,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    footer:{
+        flex: 1,
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        top: 0,
+        bottom: 0,
+        justifyContent:'flex-end'
+    },
+    header:{
+        flex: 1,
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        top: 0,
+        bottom: 0,
     }
-
 })
