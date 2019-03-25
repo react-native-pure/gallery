@@ -1,8 +1,56 @@
 {
-  "name": "@react-native-pure/gallery",
-  "version": "1.0.0",
+  "_from": "git+https://github.com/react-native-pure/gallery.git",
+  "_id": "@react-native-pure/gallery@1.0.0",
+  "_inBundle": false,
+  "_integrity": "",
+  "_location": "/@react-native-pure/gallery",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "git",
+    "raw": "https://github.com/react-native-pure/gallery.git",
+    "rawSpec": "https://github.com/react-native-pure/gallery.git",
+    "saveSpec": "git+https://github.com/react-native-pure/gallery.git",
+    "fetchSpec": "https://github.com/react-native-pure/gallery.git",
+    "gitCommittish": null
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "git+https://github.com/react-native-pure/gallery.git#637d189eb55c986c24fb95045dd16228e0f67fad",
+  "_spec": "https://github.com/react-native-pure/gallery.git",
+  "_where": "/Users/fannie.y.he/ibuild-app",
+  "author": {
+    "name": "kk"
+  },
+  "bugs": {
+    "url": "https://github.com/react-native-pure/gallery/issues"
+  },
+  "bundleDependencies": false,
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  },
+  "dependencies": {
+    "commitizen": "^3.0.7",
+    "cz-conventional-changelog": "^2.1.0",
+    "react-native-gesture-responder": "0.1.1"
+  },
+  "deprecated": false,
   "description": "滑动查看图片/视频，支持缩放",
+  "homepage": "https://github.com/react-native-pure/gallery#readme",
+  "keywords": [
+    "react",
+    "native"
+  ],
+  "license": "ISC",
   "main": "index.js",
+  "name": "@react-native-pure/gallery",
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/react-native-pure/gallery.git"
@@ -11,27 +59,5 @@
     "cm": "git-cz",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "config": {
-    "commitizen": {
-      "path": "./node_modules/cz-conventional-changelog"
-    }
-  },
-  "dependencies": {
-    "react-native-gesture-responder": "0.1.1",
-    "commitizen": "^3.0.7",
-    "cz-conventional-changelog": "^2.1.0"
-  },
-  "peerDependencies": {
-    "react": "*",
-    "react-native": "*"
-  },
-  "keywords": [
-    "react",
-    "native"
-  ],
-  "author": "kk",
-  "license": "ISC",
-  "devDependencies": {
-    "jest": "^24.5.0"
-  }
+  "version": "1.0.0"
 }

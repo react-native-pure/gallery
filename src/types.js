@@ -40,19 +40,14 @@ export type GalleryProps = {
     onChange?:(index:number)=>void,
 
     /**
-     * 内容切换动画时间
-     */
-    pageAnimateTime?:Number,
-
-    /**
      * 最大缩放比例
      */
-    maximumZoomScale?:Number,
+    maxScale?:Number,
 
     /**
      * 最小缩放比例
      */
-    minimumZoomScale?:Number,
+    minScale?:Number,
 
     /**
      * 单击
