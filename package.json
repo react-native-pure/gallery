@@ -3,11 +3,23 @@
   "version": "1.0.0",
   "description": "滑动查看图片/视频，支持缩放",
   "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/react-native-pure/gallery.git"
+  },
   "scripts": {
+    "cm": "git-cz",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  },
   "dependencies": {
-    "react-native-gesture-responder": "0.1.1"
+    "react-native-gesture-responder": "0.1.1",
+    "commitizen": "^3.0.7",
+    "cz-conventional-changelog": "^2.1.0"
   },
   "peerDependencies": {
     "react": "*",
