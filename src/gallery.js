@@ -24,7 +24,7 @@ export default class GalleryViewer extends React.Component<GalleryProps> {
 
     constructor(props) {
         super(props)
-        this.currentPage = 0;
+        this.currentPage = props.initIndex || 0;
         this.contentSize = new Map();
         this.imagesRef = new Map();
 
@@ -115,6 +115,7 @@ export default class GalleryViewer extends React.Component<GalleryProps> {
 
     _flingToPage(page, velocityX) {
         page = this.validPage(page);
+
         this._onPageChanged(page);
 
         velocityX *= -1000; //per sec
@@ -139,14 +140,15 @@ export default class GalleryViewer extends React.Component<GalleryProps> {
      * @private
      */
     _onScrollLayout = (event) => {
+
         const {layout: {width, height}} = event.nativeEvent;
         this.setState({
             containerWidth: width,
             containerHeight: height,
-        }, () => {
-            setTimeout(() => {
-                this._scrollToIndex(this.props.initIndex, true)
-            }, 0)
+        },()=>{
+           setTimeout(()=>{
+               this._scrollToIndex(this.currentPage,true);
+           },0)
         })
     }
 
@@ -156,7 +158,6 @@ export default class GalleryViewer extends React.Component<GalleryProps> {
      * @private
      */
     _onSwipeDown = (vx) => {
-
         if (vx < -MIN_FLING_VELOCITY) {
             if (this.currentPage < this.pageCount - 1) {
                 this._flingToPage(this.currentPage + 1, vx);
@@ -201,7 +202,6 @@ export default class GalleryViewer extends React.Component<GalleryProps> {
     _scrollToIndex(page, immediate) {
         page = this.validPage(page);
         this._onPageChanged(page);
-
         const finalX = this.getScrollOffsetOfPage(page);
         if (immediate) {
             this.scroller.startScroll(this.scroller.getCurrX(), 0, finalX - this.scroller.getCurrX(), 0, 0);
