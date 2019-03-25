@@ -112,6 +112,11 @@ export type ZoomViewProps = {
      */
     zoomEnable?:Boolean,
 
+    /**
+     * 是否支持双击缩放，默认true
+     */
+    enableDoubleClickZoom?:Boolean,
+
     /****
      * 最小缩放比例
      */
@@ -123,8 +128,6 @@ export type ZoomViewProps = {
     maxScale?:Number,
 
 
-    swipeDownThreshold?:Number,
-
 
     scrollToOuterRange:(offset:Number)=>void,
 
@@ -132,6 +135,11 @@ export type ZoomViewProps = {
      * 滑动结束
      */
     onSwipeDown:(direction:SwipeDirectionType)=>void,
+
+    /**
+     * 允许的滚动空白距离
+     */
+    maxOverScrollDistance?:Number
 
 
 }
@@ -143,49 +151,5 @@ export const GalleryFileType = {
     image: 0,
     //视频
     video: 1,
-}
-
-
-
-export const GestureType = {
-    /**
-     * 点击
-     */
-    singleClick:1,
-    /**
-     * 双击
-     */
-    doubleClick:2,
-
-    /**
-     * 滑动
-     */
-    pan:3,
-
-    /**
-     * 捏（缩放）
-     */
-    pinch:4,
-
-    /**
-     * 长按
-     */
-    longPress:5,
-    /**
-     * 未定义
-     */
-    none:-999
-}
-
-export type ICenterOn = {
-    x: number,
-    y: number,
-    scale: number,
-    duration: number,
-}
-
-export type Position = {
-    x:number,
-    y:number,
 }
 

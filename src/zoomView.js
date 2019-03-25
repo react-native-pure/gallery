@@ -24,18 +24,10 @@ import {
 
 export default class ZoomView extends React.Component<ZoomViewProps> {
     static defaultProps = {
-        panToMove: true,
-        pinchToZoom: true,
+        zoomEnable: true,
         enableDoubleClickZoom: true,
-        clickDistance: 10,
-        maxOverflow: 100,
-        doubleClickInterval: 250,
-        swipeDownThreshold: 230,
-        enableSwipeDown: false,
-        enableCenterFocus: true,
         minScale: 1,
         maxScale: 2,
-        renderToHardwareTextureAndroid: false,
         maxOverScrollDistance: 20,
     }
 
@@ -46,9 +38,9 @@ export default class ZoomView extends React.Component<ZoomViewProps> {
         this._viewPortRect = new Rect();
 
         this.state = {
-            scale: new Animated.Value(1),
-            translateY: new Animated.Value(0),
-            translateX: new Animated.Value(0),
+            scale: 1,
+            translateY:0,
+            translateX: 0,
             width: 0,
             height: 0,
             animator: new Animated.Value(0),
@@ -63,13 +55,14 @@ export default class ZoomView extends React.Component<ZoomViewProps> {
             onResponderTerminate: this._onResponderRelease.bind(this)
         });
         this.scroller = new Scroller(true, (dx, dy, scroller) => {
+
             if (dx === 0 && dy === 0 && scroller.isFinished()) {
                 this.animateBounce();
                 return;
             }
             this.updateTransform({
-                translateX: this.state.translateX._value + dx / this.state.scale._value,
-                translateY: this.state.translateY._value + dy / this.state.scale._value
+                translateX: this.state.translateX + dx / this.state.scale,
+                translateY: this.state.translateY + dy / this.state.scale
             })
         });
     }
@@ -80,12 +73,11 @@ export default class ZoomView extends React.Component<ZoomViewProps> {
     }
 
     _onResponderMove(evt, gestureState) {
-
         this.cleanAnimation()
         let dx = gestureState.moveX - gestureState.previousMoveX;
         let dy = gestureState.moveY - gestureState.previousMoveY;
 
-        if (gestureState.previousPinch && gestureState.pinch && this.props.pinchToZoom) {
+        if (gestureState.previousPinch && gestureState.pinch && this.props.zoomEnable) {
             this.ignorSwipe = true;
             let scaleBy = gestureState.pinch / gestureState.previousPinch;
             let pivotX = gestureState.moveX;
@@ -114,8 +106,8 @@ export default class ZoomView extends React.Component<ZoomViewProps> {
                     dx = 0;
                 }
                 let transform = {
-                    translateX: this.state.translateX._value + dx / this.state.scale._value,
-                    translateY: this.state.translateY._value + dy / this.state.scale._value
+                    translateX: this.state.translateX+ dx / this.state.scale,
+                    translateY: this.state.translateY + dy / this.state.scale
                 };
                 this.updateTransform(transform);
             }
@@ -125,7 +117,7 @@ export default class ZoomView extends React.Component<ZoomViewProps> {
     _onResponderRelease(evt, gestureState) {
         /**双击**/
         if (gestureState.doubleTapUp) {
-            if (this.props.zoomEnable) {
+            if (this.props.enableDoubleClickZoom) {
                 let pivotX = 0, pivotY = 0;
                 if (gestureState.dx || gestureState.dy) {
                     pivotX = gestureState.moveX;
@@ -151,7 +143,6 @@ export default class ZoomView extends React.Component<ZoomViewProps> {
         }
     }
 
-
     /**
      * 判断是否超出边界
      * @param dx
@@ -163,15 +154,18 @@ export default class ZoomView extends React.Component<ZoomViewProps> {
         }
         let dx = gestureState.moveX - gestureState.previousMoveX;
         let lastTranformRect = this.transformedContentRect()
-        let translateX = this.state.translateX._value + dx / this.state.scale._value
-        if (Math.abs(translateX) * this.state.scale._value >= (lastTranformRect.width() - this.viewPortRect().width()) / 2) {
+        let translateX = this.state.translateX+ dx / this.state.scale
+        if (Math.abs(translateX) * this.state.scale >= (lastTranformRect.width() - this.viewPortRect().width()) / 2) {
             return true;
         }
         return false;
     }
 
+    /**
+     * 边界计算
+     */
     animateBounce() {
-        let curScale = this.state.scale._value;
+        let curScale = this.state.scale;
         let minScale = 1;
         let maxScale = this.props.maxScale;
         let scaleBy = 1;
@@ -189,15 +183,19 @@ export default class ZoomView extends React.Component<ZoomViewProps> {
                 y: this.viewPortRect().centerY()
             }
         ));
-
         rect = alignedRect(rect, this.viewPortRect());
         this.animate(rect)
     }
 
 
+    /**
+     * 双击
+     * @param pivotX
+     * @param pivotY
+     */
     performDoubleTapUp(pivotX, pivotY) {
 
-        let curScale = this.state.scale._value;
+        let curScale = this.state.scale;
         let scaleBy;
         if (curScale > (1 + this.props.maxScale) / 2) {
             scaleBy = 1 / curScale;
@@ -216,9 +214,6 @@ export default class ZoomView extends React.Component<ZoomViewProps> {
         this.animate(rect);
     }
 
-    currentTransform() {
-        return new Transform(this.state.scale._value, this.state.translateX._value, this.state.translateY._value);
-    }
 
     performFling(vx, vy) {
         let startX = 0;
@@ -255,7 +250,6 @@ export default class ZoomView extends React.Component<ZoomViewProps> {
                 minY = 0;
             }
         }
-
         vx *= 1000; //per second
         vy *= 1000;
         if (Math.abs(vx) > 2 * Math.abs(vy)) {
@@ -264,6 +258,10 @@ export default class ZoomView extends React.Component<ZoomViewProps> {
             vx = 0;
         }
         this.scroller.fling(startX, startY, vx, vy, minX, maxX, minY, maxY);
+    }
+
+    currentTransform() {
+        return new Transform(this.state.scale, this.state.translateX, this.state.translateY);
     }
 
     viewPortRect() {
@@ -287,10 +285,16 @@ export default class ZoomView extends React.Component<ZoomViewProps> {
         return rect;
     }
 
+    /**
+     * 更新transform
+     * @param transform
+     */
     updateTransform(transform) {
-        this.state.translateX.setValue(transform.translateX);
-        this.state.translateY.setValue(transform.translateY);
-        this.state.scale.setValue(transform.scale || this.state.scale._value)
+        this.setState({
+            scale:transform.scale || this.state.scale,
+            translateX:transform.translateX,
+            translateY:transform.translateY
+        })
     }
 
     /**
@@ -363,7 +367,7 @@ export default class ZoomView extends React.Component<ZoomViewProps> {
             }}
                   onLayout={this._handleLayout.bind(this)}
                   {...this.imagePanResponder}>
-                <Animated.View renderToHardwareTextureAndroid={this.props.renderToHardwareTextureAndroid}
+                <View renderToHardwareTextureAndroid={this.props.renderToHardwareTextureAndroid}
                                style={[{flex: 1}, {
                                    transform: [
                                        {
@@ -378,7 +382,7 @@ export default class ZoomView extends React.Component<ZoomViewProps> {
                                    ]
                                }]}>
                     {this.props.children}
-                </Animated.View>
+                </View>
             </View>
         );
     }

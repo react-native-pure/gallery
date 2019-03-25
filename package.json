@@ -30,5 +30,8 @@
     "native"
   ],
   "author": "kk",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "jest": "^24.5.0"
+  }
 }

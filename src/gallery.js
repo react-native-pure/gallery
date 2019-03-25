@@ -53,6 +53,7 @@ export default class GalleryViewer extends React.Component<GalleryProps> {
     }
 
     componentWillReceiveProps(nextProps) {
+
         if (nextProps.initIndex != this.currentPage) {
             this._scrollToIndex(nextProps.initIndex, false)
         }
