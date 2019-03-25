@@ -17,9 +17,10 @@ export default class GalleryViewer extends React.Component<GalleryProps> {
     static defaultProps = {
         style: {},
         dataSource: null,
-        maximumZoomScale: 2.5,
-        minimumZoomScale: 1,
+        maxScale: 2.5,
+        minScale: 1,
         zoomEnable: true,
+        enableDoubleClickZoom: true
     }
 
     constructor(props) {
@@ -101,8 +102,9 @@ export default class GalleryViewer extends React.Component<GalleryProps> {
      * 手势开始
      * @private
      */
-    _onResponderGrant() {
+    _onResponderGrant(event,gesture) {
         this.scroller.forceFinished(true);
+        this.props.onResponderGrant && this.props.onResponderGrant(event,gesture)
     }
 
     _onPageChanged(page) {
@@ -146,10 +148,10 @@ export default class GalleryViewer extends React.Component<GalleryProps> {
         this.setState({
             containerWidth: width,
             containerHeight: height,
-        },()=>{
-           setTimeout(()=>{
-               this._scrollToIndex(this.currentPage,true);
-           },0)
+        }, () => {
+            setTimeout(() => {
+                this._scrollToIndex(this.currentPage, true);
+            }, 0)
         })
     }
 
@@ -223,21 +225,21 @@ export default class GalleryViewer extends React.Component<GalleryProps> {
                       source={{uri: item.url}}/>
     }
 
-    renderLodaing(item,index) {
+    renderLodaing(item, index) {
         return <View pointerEvents='none' style={styles.loading}>
-            { this.props.renderIndicator(item,index)}
+            {this.props.renderIndicator(item, index)}
         </View>
     }
 
-    renderFooter(){
+    renderFooter() {
         return <View pointerEvents='none' style={styles.footer}>
-            { this.props.renderFooter(this.currentPage)}
+            {this.props.renderFooter(this.currentPage)}
         </View>
     }
 
-    renderHeader(){
+    renderHeader() {
         return <View pointerEvents='none' style={styles.header}>
-            { this.props.renderHeader(this.currentPage)}
+            {this.props.renderHeader(this.currentPage)}
         </View>
     }
 
@@ -258,29 +260,34 @@ export default class GalleryViewer extends React.Component<GalleryProps> {
                             showsHorizontalScrollIndicator={false}
                             showsVerticalScrollIndicator={false}>
                     {this.props.dataSource && this.props.dataSource.map((item, index) => {
-                        return <ZoomView
-                            key={index}
-                            ref={(refs) => {
-                                this.imagesRef.set(index, refs)
-                            }}
-                            style={styles.content}
-                            contentAspectRatio={this.contentSizeByIndex(index).width / this.contentSizeByIndex(index).height}
-                            maxOverflow={this.props.maxOverflow}
-                            onResponderGrant={this._onResponderGrant.bind(this)}
-                            horizontalOuterRangeOffset={(offset) => {
-                                this._scrollToX(offset)
-                            }}
-                            onDoubleClick={this.props.onDoubleClick}
-                            zoomEnable={this.props.zoomEnable}
-                            swipeDownThreshold={this.props.swipeDownThreshold}
-                            onSwipeDown={(vx) => {
-                                this._onSwipeDown(vx)
-                            }}
-                            pinchToZoom={this.props.zoomEnable}
-                            enableDoubleClickZoom={this.props.zoomEnable}
-                            doubleClickInterval={this.props.doubleClickInterval}>
+                        return <ZoomView key={index}
+                                         ref={(refs) => {
+                                             this.imagesRef.set(index, refs)
+                                         }}
+                                         style={styles.content}
+                                         maxScale={this.props.maxScale}
+                                         minScale={this.props.minScale}
+                                         contentAspectRatio={this.contentSizeByIndex(index).width / this.contentSizeByIndex(index).height}
+                                         onResponderGrant={this._onResponderGrant.bind(this)}
+                                         onResponderMove={this.props.onResponderMove}
+                                         onResponderEnd={this.props.onResponderEnd}
+                                         zoomEnable={this.props.zoomEnable?this.props.zoomEnable:!item.disableZoom}
+                                         enableDoubleClickZoom={this.props.enableDoubleClickZoom}
+                                         swipeDownThreshold={this.props.swipeDownThreshold}
+                                         onPress={()=>{
+                                             this.props.onPress && this.props.onPress(index)
+                                         }}
+                                         onDoubleClick={()=>{
+                                             this.props.onDoubleClick && this.props.this.props.onDoubleClick(index)
+                                         }}
+                                         onSwipeDown={(vx) => {
+                                             this._onSwipeDown(vx)
+                                         }}
+                                         horizontalOuterRangeOffset={(offset) => {
+                                             this._scrollToX(offset)
+                                         }}>
                             {this.renderItem(item, index)}
-                            {this.props.renderIndicator && this.renderLodaing(item,index)}
+                            {this.props.renderIndicator && this.renderLodaing(item, index)}
                         </ZoomView>
                     })}
                 </ScrollView>
@@ -311,16 +318,16 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
-    footer:{
+    footer: {
         flex: 1,
         position: 'absolute',
         left: 0,
         right: 0,
         top: 0,
         bottom: 0,
-        justifyContent:'flex-end'
+        justifyContent: 'flex-end'
     },
-    header:{
+    header: {
         flex: 1,
         position: 'absolute',
         left: 0,

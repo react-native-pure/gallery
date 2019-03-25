@@ -54,10 +54,33 @@ export type GalleryProps = {
      */
     minimumZoomScale?:Number,
 
+    /**
+     * 单击
+     */
+    onPress?:(index: Number) =>void,
+
     /***
      * 双击
      */
-    onDoubleClick?:(data:GalleryData,index: Number) =>void
+    onDoubleClick?:(index: Number) =>void,
+
+    /**
+     * 是否支持双击，默认支持
+     */
+    enableDoubleClickZoom?:Boolean,
+    /**
+     * 手势开始
+     */
+    onResponderGrant?:(event,gestureState)=>void,
+
+    /**
+     * 手势移动
+     */
+    onResponderMove?:(event,gestureState)=>void,
+    /**
+     * 手势结束
+     */
+    onResponderEnd?:(event,gestureState)=>void,
 
 }
 
@@ -79,9 +102,9 @@ export type GalleryData = {
     coverImageUrl?: String,
 
     /**
-     *  是否可以缩放，默认true
+     *  禁用缩放，默认false
      */
-    zoomEnable?:Boolean,
+    disableZoom?:Boolean,
 
 
 }
@@ -96,16 +119,16 @@ export type ZoomViewProps = {
     /***
      * 单击
      */
-    onClick?:(data:GalleryData,index: Number) =>void,
+    onPress?:(data:GalleryData,index: Number) =>void,
     /***
      * 双击
      */
     onDoubleClick?:(data:GalleryData,index: Number) =>void,
 
     /**
-     * 手势结束
+     * 内容宽高比例
      */
-    responderEnd:(offset:Number,scale:Number)=>void,
+    contentAspectRatio:Number,
 
     /**
      *  是否可以缩放，默认true
@@ -127,9 +150,24 @@ export type ZoomViewProps = {
      */
     maxScale?:Number,
 
+    /**
+     * 滑动超出边界时触发
+     */
+    horizontalOuterRangeOffset:(offset:Number)=>void,
 
+    /**
+     * 手势开始
+     */
+    onResponderGrant?:(event,gestureState)=>void,
 
-    scrollToOuterRange:(offset:Number)=>void,
+    /**
+     * 手势移动
+     */
+    onResponderMove?:(event,gestureState)=>void,
+    /**
+     * 手势结束
+     */
+    onResponderEnd?:(event,gestureState)=>void,
 
     /**
      * 滑动结束
@@ -139,7 +177,13 @@ export type ZoomViewProps = {
     /**
      * 允许的滚动空白距离
      */
-    maxOverScrollDistance?:Number
+    maxOverScrollDistance?:Number,
+
+    /**
+     * 单击
+     */
+    onPress?:(index: Number) =>void,
+
 
 
 }

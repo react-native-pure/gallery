@@ -27,19 +27,27 @@ export default class ZoomView extends React.Component<ZoomViewProps> {
         zoomEnable: true,
         enableDoubleClickZoom: true,
         minScale: 1,
-        maxScale: 2,
+        maxScale: 2.5,
         maxOverScrollDistance: 20,
     }
 
     constructor(props) {
         super(props)
+
+        /**为true时，滑动会控制在当页内**/
         this.ignorSwipe = false;
+
+        /**
+         * 是否正在滑动
+         */
+        this.isPaning = false;
+
         this._reset = this._reset.bind(this)
         this._viewPortRect = new Rect();
 
         this.state = {
             scale: 1,
-            translateY:0,
+            translateY: 0,
             translateX: 0,
             width: 0,
             height: 0,
@@ -69,10 +77,15 @@ export default class ZoomView extends React.Component<ZoomViewProps> {
 
     _onResponderGrant(evt, gestureState) {
         this.ignorSwipe = false;
+        this.isPaning = false
         this.props.onResponderGrant(evt, gestureState)
     }
 
     _onResponderMove(evt, gestureState) {
+        if (this.props.onResponderMove) {
+            this.props.onResponderMove(evt, gestureState)
+            return;
+        }
         this.cleanAnimation()
         let dx = gestureState.moveX - gestureState.previousMoveX;
         let dy = gestureState.moveY - gestureState.previousMoveY;
@@ -82,7 +95,6 @@ export default class ZoomView extends React.Component<ZoomViewProps> {
             let scaleBy = gestureState.pinch / gestureState.previousPinch;
             let pivotX = gestureState.moveX;
             let pivotY = gestureState.moveY;
-
 
             let rect = transformedRect(transformedRect(this.contentRect(), this.currentTransform()), new Transform(
                 scaleBy, dx, dy,
@@ -96,6 +108,7 @@ export default class ZoomView extends React.Component<ZoomViewProps> {
         } else {
             /**超出边界**/
             if (this.isOutRange(gestureState)) {
+                this.isPaning = true;
                 this.props.horizontalOuterRangeOffset && this.props.horizontalOuterRangeOffset(dx)
             }
             else {
@@ -106,7 +119,7 @@ export default class ZoomView extends React.Component<ZoomViewProps> {
                     dx = 0;
                 }
                 let transform = {
-                    translateX: this.state.translateX+ dx / this.state.scale,
+                    translateX: this.state.translateX + dx / this.state.scale,
                     translateY: this.state.translateY + dy / this.state.scale
                 };
                 this.updateTransform(transform);
@@ -115,6 +128,14 @@ export default class ZoomView extends React.Component<ZoomViewProps> {
     }
 
     _onResponderRelease(evt, gestureState) {
+        if (this.props.onResponderEnd) {
+            this.props.onResponderEnd(evt, gestureState)
+            return
+        }
+        if(gestureState.singleTapUp){
+            this.props.onPress && this.props.onPress()
+            return;
+        }
         /**双击**/
         if (gestureState.doubleTapUp) {
             if (this.props.enableDoubleClickZoom) {
@@ -128,6 +149,7 @@ export default class ZoomView extends React.Component<ZoomViewProps> {
                 }
                 this.performDoubleTapUp(pivotX, pivotY);
             }
+            this.props.onDoubleClick && this.props.onDoubleClick()
         }
         else {
             if (gestureState.dy === 0 && gestureState.dx === 0) {
@@ -152,9 +174,12 @@ export default class ZoomView extends React.Component<ZoomViewProps> {
         if (this.ignorSwipe) {
             return false;
         }
+        if (this.isPaning) {
+            return true;
+        }
         let dx = gestureState.moveX - gestureState.previousMoveX;
         let lastTranformRect = this.transformedContentRect()
-        let translateX = this.state.translateX+ dx / this.state.scale
+        let translateX = this.state.translateX + dx / this.state.scale
         if (Math.abs(translateX) * this.state.scale >= (lastTranformRect.width() - this.viewPortRect().width()) / 2) {
             return true;
         }
@@ -291,9 +316,9 @@ export default class ZoomView extends React.Component<ZoomViewProps> {
      */
     updateTransform(transform) {
         this.setState({
-            scale:transform.scale || this.state.scale,
-            translateX:transform.translateX,
-            translateY:transform.translateY
+            scale: transform.scale || this.state.scale,
+            translateX: transform.translateX,
+            translateY: transform.translateY
         })
     }
 
@@ -368,19 +393,19 @@ export default class ZoomView extends React.Component<ZoomViewProps> {
                   onLayout={this._handleLayout.bind(this)}
                   {...this.imagePanResponder}>
                 <View renderToHardwareTextureAndroid={this.props.renderToHardwareTextureAndroid}
-                               style={[{flex: 1}, {
-                                   transform: [
-                                       {
-                                           scale: this.state.scale
-                                       },
-                                       {
-                                           translateX: this.state.translateX
-                                       },
-                                       {
-                                           translateY: this.state.translateY
-                                       }
-                                   ]
-                               }]}>
+                      style={[{flex: 1}, {
+                          transform: [
+                              {
+                                  scale: this.state.scale
+                              },
+                              {
+                                  translateX: this.state.translateX
+                              },
+                              {
+                                  translateY: this.state.translateY
+                              }
+                          ]
+                      }]}>
                     {this.props.children}
                 </View>
             </View>
