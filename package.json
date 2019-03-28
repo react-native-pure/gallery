@@ -33,7 +33,6 @@
     }
   },
   "dependencies": {
-    "commitizen": "^3.0.7",
     "cz-conventional-changelog": "^2.1.0",
     "react-native-gesture-responder": "0.1.1"
   },
@@ -57,7 +56,21 @@
   },
   "scripts": {
     "cm": "git-cz",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
-  "version": "1.0.0"
+  "version": "1.0.0",
+  "devDependencies": {
+    "@babel/core": "^7.3.4",
+    "@babel/plugin-proposal-class-properties": "^7.3.4",
+    "@babel/preset-env": "^7.3.4",
+    "@babel/preset-flow": "^7.0.0",
+    "@babel/preset-react": "^7.0.0",
+    "babel-jest": "^24.5.0",
+    "commitizen": "^3.0.7",
+    "jest": "^24.5.0",
+    "jest-haste-map": "^24.5.0",
+    "react": "^16.8.3",
+    "react-native": "^0.59.1",
+    "react-test-renderer": "^16.8.4"
+  }
 }

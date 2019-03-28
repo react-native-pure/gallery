@@ -22,7 +22,7 @@ export type GalleryProps = {
     /**
      * 自定义头部
      */
-    renderHeader?:(index: Number,) => React.ReactElement<any>,
+    renderHeader?:(index: Number) => React.ReactElement<any>,
 
     /**
      * 内容页面渲染
