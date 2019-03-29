@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import {GalleryProps, GalleryFileType} from './types';
 import ZoomView from './zoomView';
-import Scroller from 'react-native-scroller';
+import Scroller from './scroll/scroller';
 
 const MIN_FLING_VELOCITY = 0.5;
 
@@ -64,6 +64,9 @@ export default class GalleryViewer extends React.Component<GalleryProps> {
     }
 
     get pageCount() {
+        if(this.props.dataSource){
+            return 0
+        }
         return this.props.dataSource.length || 0
     }
 
@@ -80,13 +83,15 @@ export default class GalleryViewer extends React.Component<GalleryProps> {
      */
     fetchContentSize(dataSource) {
         this.contentSize.clear()
-        dataSource.forEach((item, index) => {
-            if (item.type === GalleryFileType.image) {
-                Image.getSize(item.url, (width, height) => {
-                    this.contentSize.set(index, {width, height})
-                })
-            }
-        })
+        if(dataSource){
+            dataSource.forEach((item, index) => {
+                if (item.type === GalleryFileType.image) {
+                    Image.getSize(item.url, (width, height) => {
+                        this.contentSize.set(index, {width, height})
+                    })
+                }
+            })
+        }
     }
 
     /**

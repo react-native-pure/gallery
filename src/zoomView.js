@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import {ZoomViewProps, SwipeDirectionType} from './types';
 import {createResponder} from 'react-native-gesture-responder';
-import Scroller from 'react-native-scroller';
+import Scroller from './scroll/scroller';
 import {
     alignedRect,
     availableTranslateSpace,
