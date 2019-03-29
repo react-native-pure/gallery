@@ -1,38 +1,8 @@
 {
-  "_from": "git+https://github.com/react-native-pure/gallery.git",
-  "_id": "@react-native-pure/gallery@1.0.0",
-  "_inBundle": false,
-  "_integrity": "",
-  "_location": "/@react-native-pure/gallery",
-  "_phantomChildren": {},
-  "_requested": {
-    "type": "git",
-    "raw": "https://github.com/react-native-pure/gallery.git",
-    "rawSpec": "https://github.com/react-native-pure/gallery.git",
-    "saveSpec": "git+https://github.com/react-native-pure/gallery.git",
-    "fetchSpec": "https://github.com/react-native-pure/gallery.git",
-    "gitCommittish": null
-  },
-  "_requiredBy": [
-    "#USER",
-    "/"
-  ],
-  "_resolved": "git+https://github.com/react-native-pure/gallery.git#637d189eb55c986c24fb95045dd16228e0f67fad",
-  "_spec": "https://github.com/react-native-pure/gallery.git",
-  "_where": "/Users/fannie.y.he/ibuild-app",
+  "name": "@react-native-pure/gallery",
   "author": {
     "name": "kk"
   },
-  "bugs": {
-    "url": "https://github.com/react-native-pure/gallery/issues"
-  },
-  "bundleDependencies": false,
-  "config": {
-    "commitizen": {
-      "path": "./node_modules/cz-conventional-changelog"
-    }
-  },
-  "deprecated": false,
   "description": "滑动查看图片/视频，支持缩放",
   "homepage": "https://github.com/react-native-pure/gallery#readme",
   "keywords": [
@@ -41,10 +11,15 @@
   ],
   "license": "ISC",
   "main": "index.js",
-  "name": "@react-native-pure/gallery",
   "peerDependencies": {
     "react": "*",
-    "react-native": "*"
+    "react-native": "*",
+    "react-native-gesture-responder": "^0.1.1"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
   },
   "repository": {
     "type": "git",
@@ -58,12 +33,6 @@
   "devDependencies": {
     "@babel/core": "^7.4.0",
     "@babel/runtime": "^7.4.2",
-    "@commitlint/cli": "^7.5.2",
-    "@commitlint/config-conventional": "^7.5.0",
-    "@types/jest": "^24.0.11",
-    "@types/react": "^16.8.8",
-    "@types/react-native": "^0.57.41",
-    "@types/react-test-renderer": "^16.8.1",
     "babel-eslint": "^10.0.1",
     "babel-jest": "^24.5.0",
     "commitizen": "^3.0.7",
@@ -76,8 +45,6 @@
     "react-native-testing-library": "^1.6.1",
     "react-test-renderer": "16.8.3",
     "semantic-release": "^15.13.3",
-    "ts-jest": "^24.0.0",
-    "typescript": "^3.3.4000",
-    "typescript-eslint-parser": "^18.0.0"
+    "ts-jest": "^24.0.0"
   }
 }
