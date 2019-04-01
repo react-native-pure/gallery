@@ -13,8 +13,7 @@
   "main": "index.js",
   "peerDependencies": {
     "react": "*",
-    "react-native": "*",
-    "react-native-gesture-responder": "^0.1.1"
+    "react-native": "*"
   },
   "config": {
     "commitizen": {
@@ -33,18 +32,17 @@
   "devDependencies": {
     "@babel/core": "^7.4.0",
     "@babel/runtime": "^7.4.2",
-    "babel-eslint": "^10.0.1",
-    "babel-jest": "^24.5.0",
     "commitizen": "^3.0.7",
     "cz-conventional-changelog": "^2.1.0",
     "jest": "^24.5.0",
     "metro-react-native-babel-preset": "^0.53.1",
     "react": "^16.8.3",
     "react-native": "^0.59.1",
-    "react-native-gesture-responder": "^0.1.1",
     "react-native-testing-library": "^1.6.1",
     "react-test-renderer": "16.8.3",
-    "semantic-release": "^15.13.3",
-    "ts-jest": "^24.0.0"
+    "semantic-release": "^15.13.3"
+  },
+  "dependencies": {
+    "react-native-gesture-responder": "^0.1.1"
   }
 }
