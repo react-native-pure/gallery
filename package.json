@@ -26,7 +26,8 @@
   },
   "scripts": {
     "cm": "git-cz",
-    "test": "jest"
+    "test": "jest",
+    "publish": "semantic-release"
   },
   "version": "1.0.0",
   "devDependencies": {
