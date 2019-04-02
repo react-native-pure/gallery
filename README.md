@@ -3,6 +3,12 @@
 A pure JavaScript image and video gallery component for react-native apps with common gestures like pan, pinch and doubleTap, supporting both iOS and Android.
 Support custom item.
 
+[![Build Status](https://travis-ci.org/react-native-pure/gallery.svg?branch=master)](https://travis-ci.org/react-native-pure/gallery)
+[![npm version](https://img.shields.io/npm/v/@react-native-pure/gallery.svg)](https://www.npmjs.com/package/@react-native-pure/gallery)
+[![npm license](https://img.shields.io/npm/l/@react-native-pure/gallery.svg)](https://www.npmjs.com/package/@react-native-pure/gallery)
+[![npm download](https://img.shields.io/npm/dm/@react-native-pure/gallery.svg)](https://www.npmjs.com/package/@react-native-pure/gallery)
+[![npm download](https://img.shields.io/npm/dt/@react-native-pure/gallery.svg)](https://www.npmjs.com/package/@react-native-pure/gallery)
+
 
 ## Install
 

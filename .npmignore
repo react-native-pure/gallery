@@ -1,3 +1,5 @@
 babel.config.js
 .idea
 jest.config.js
+.travis.yml
+.badge.json
