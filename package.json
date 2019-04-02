@@ -1,5 +1,6 @@
 {
   "name": "@react-native-pure/gallery",
+  "version": "0.0.1",
   "author": {
     "name": "kk"
   },
@@ -9,11 +10,11 @@
     "react",
     "native"
   ],
-  "license": "ISC",
+  "license": "MIT",
   "main": "index.js",
   "peerDependencies": {
-    "react": "*",
-    "react-native": "*"
+    "react": ">=16",
+    "react-native": ">=0.47"
   },
   "config": {
     "commitizen": {
@@ -29,7 +30,6 @@
     "test": "jest",
     "publish": "semantic-release"
   },
-  "version": "1.0.0",
   "devDependencies": {
     "@babel/core": "^7.3.4",
     "@babel/runtime": "^7.1.5",
