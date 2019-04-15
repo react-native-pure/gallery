@@ -64,7 +64,7 @@ export default class GalleryViewer extends React.Component<GalleryProps> {
     }
 
     get pageCount() {
-        if(this.props.dataSource){
+        if(!this.props.dataSource){
             return 0
         }
         return this.props.dataSource.length || 0
