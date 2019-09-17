@@ -77,6 +77,18 @@ export type GalleryProps = {
      */
     onResponderEnd?:(event,gestureState)=>void,
 
+    /***
+     * 长按
+     * @param index
+     */
+    onLongPress?:(index: Number)=>void,
+
+    /***
+     * 长按的时长，单位毫秒
+     */
+    longPressThreshold?:number
+
+
 }
 
 
@@ -177,7 +189,19 @@ export type ZoomViewProps = {
     /**
      * 单击
      */
-    onPress?:(index: Number) =>void,
+    onPress?:() =>void,
+
+
+    /**
+     * 长按
+     * @param index
+     */
+    onLongPress?:() =>void,
+
+    /***
+     * 长按的时长，单位毫秒
+     */
+    longPressThreshold?:number
 
 
 

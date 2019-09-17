@@ -29,10 +29,14 @@ export default class ZoomView extends React.Component<ZoomViewProps> {
         minScale: 1,
         maxScale: 2.5,
         maxOverScrollDistance: 20,
+        longPressThreshold:1500
     }
 
     constructor(props) {
         super(props)
+
+        /**手势开始时间搓**/
+        this.startInterval = null;
 
         /**为true时，滑动会控制在当页内**/
         this.ignorSwipe = false;
@@ -41,6 +45,19 @@ export default class ZoomView extends React.Component<ZoomViewProps> {
          * 是否正在滑动
          */
         this.isPaning = false;
+
+        /***
+         * 是否在长按
+         * @type {boolean}
+         */
+        this.isLongPress = false;
+
+        /**
+         * 长按计时器
+         * @type {null}
+         */
+        this.longPressTimer = null
+
 
         this._reset = this._reset.bind(this)
         this._viewPortRect = new Rect();
@@ -75,9 +92,46 @@ export default class ZoomView extends React.Component<ZoomViewProps> {
         });
     }
 
+    /***
+     * 开始长按计时器
+     * @private
+     */
+    _startLongPressTimer(){
+        if(this.longPressTimer){
+            clearTimeout(this.longPressTimer)
+        }
+        this.longPressTimer = setTimeout(()=>{
+            if(!!this.props.onLongPress){
+                this.isLongPress = true;
+                this.props.onLongPress()
+                this.longPressTimer = null;
+            }
+        },this.props.longPressThreshold)
+    }
+
+
+    /**
+     * 结束长按计时器
+     * @private
+     */
+    _cleanLongPressTimer(){
+        if(this.longPressTimer){
+            clearTimeout(this.longPressTimer)
+            this.longPressTimer = null;
+        }
+        this.isLongPress = false;
+    }
+
+
     _onResponderGrant(evt, gestureState) {
+        this.startInterval = new Date().getTime()
         this.ignorSwipe = false;
-        this.isPaning = false
+        this.isPaning = false;
+        if(this.props.onLongPress){
+            this.isLongPress = true;
+            this._startLongPressTimer()
+        }
+        this.startPoint = {x:evt.nativeEvent.locationX,y:evt.nativeEvent.locationY}
         this.props.onResponderGrant(evt, gestureState)
     }
 
@@ -86,6 +140,7 @@ export default class ZoomView extends React.Component<ZoomViewProps> {
             this.props.onResponderMove(evt, gestureState)
             return;
         }
+        this._cleanLongPressTimer()
         this.cleanAnimation()
         let dx = gestureState.moveX - gestureState.previousMoveX;
         let dy = gestureState.moveY - gestureState.previousMoveY;
@@ -131,6 +186,9 @@ export default class ZoomView extends React.Component<ZoomViewProps> {
         if (this.props.onResponderEnd) {
             this.props.onResponderEnd(evt, gestureState)
             return
+        }
+        if(this.isLongPress){
+            return;
         }
         if(gestureState.singleTapUp){
             this.props.onPress && this.props.onPress()

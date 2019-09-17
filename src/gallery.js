@@ -282,6 +282,9 @@ export default class GalleryViewer extends React.Component<GalleryProps> {
                                          onPress={()=>{
                                              this.props.onPress && this.props.onPress(index)
                                          }}
+                                         onLongPress={this.props.onLongPress?()=>{
+                                             this.props.onLongPress(index)
+                                         }:null}
                                          onDoubleClick={()=>{
                                              this.props.onDoubleClick && this.props.this.props.onDoubleClick(index)
                                          }}
@@ -290,7 +293,9 @@ export default class GalleryViewer extends React.Component<GalleryProps> {
                                          }}
                                          horizontalOuterRangeOffset={(offset) => {
                                              this._scrollToX(offset)
-                                         }}>
+                                         }}
+                                         longPressThreshold={this.props.longPressThreshold}
+                        >
                             {this.renderItem(item, index)}
                             {this.props.renderIndicator && this.renderLodaing(item, index)}
                         </ZoomView>
