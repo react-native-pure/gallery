@@ -187,9 +187,6 @@ export default class ZoomView extends React.Component<ZoomViewProps> {
             this.props.onResponderEnd(evt, gestureState)
             return
         }
-        if(this.isLongPress){
-            return;
-        }
         this._cleanLongPressTimer()
         if(gestureState.singleTapUp){
             this.props.onPress && this.props.onPress()
