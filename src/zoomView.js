@@ -29,7 +29,7 @@ export default class ZoomView extends React.Component<ZoomViewProps> {
         minScale: 1,
         maxScale: 2.5,
         maxOverScrollDistance: 20,
-        longPressThreshold:1500
+        longPressThreshold:2500
     }
 
     constructor(props) {
