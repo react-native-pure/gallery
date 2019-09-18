@@ -46,11 +46,6 @@ export default class ZoomView extends React.Component<ZoomViewProps> {
          */
         this.isPaning = false;
 
-        /***
-         * 是否在长按
-         * @type {boolean}
-         */
-        this.isLongPress = false;
 
         /**
          * 长按计时器
@@ -102,7 +97,6 @@ export default class ZoomView extends React.Component<ZoomViewProps> {
         }
         this.longPressTimer = setTimeout(()=>{
             if(!!this.props.onLongPress){
-                this.isLongPress = true;
                 this.props.onLongPress()
                 this.longPressTimer = null;
             }
@@ -119,7 +113,6 @@ export default class ZoomView extends React.Component<ZoomViewProps> {
             clearTimeout(this.longPressTimer)
             this.longPressTimer = null;
         }
-        this.isLongPress = false;
     }
 
 
@@ -128,10 +121,8 @@ export default class ZoomView extends React.Component<ZoomViewProps> {
         this.ignorSwipe = false;
         this.isPaning = false;
         if(this.props.onLongPress){
-            this.isLongPress = true;
             this._startLongPressTimer()
         }
-        this.startPoint = {x:evt.nativeEvent.locationX,y:evt.nativeEvent.locationY}
         this.props.onResponderGrant(evt, gestureState)
     }
 
