@@ -4,7 +4,6 @@ import {
     StyleSheet,
     ScrollView,
     Image,
-    ActivityIndicator
 } from 'react-native';
 import {GalleryProps, GalleryFileType} from './types';
 import ZoomView from './zoomView';
@@ -25,13 +24,13 @@ export default class GalleryViewer extends React.Component<GalleryProps> {
 
     constructor(props) {
         super(props)
-        this.currentPage = props.initIndex || 0;
         this.contentSize = new Map();
         this.imagesRef = new Map();
 
         this.state = {
             containerWidth: 0,
             containerHeight: 0,
+            currentPage: props.initIndex || 0
         }
         this.scroller = new Scroller(true, (dx, dy, scroller) => {
             if (!(dx === 0 && dy === 0 && scroller.isFinished()) && this._mount) {
@@ -43,6 +42,9 @@ export default class GalleryViewer extends React.Component<GalleryProps> {
         this._scrollToIndex = this._scrollToIndex.bind(this)
     }
 
+    get currentPage(){
+        return this.state.currentPage
+    }
     componentDidMount() {
         this._mount = true;
         this.fetchContentSize(this.props.dataSource)
@@ -115,9 +117,12 @@ export default class GalleryViewer extends React.Component<GalleryProps> {
     _onPageChanged(page) {
         if (this.currentPage !== page) {
             const lastPage = this.currentPage;
-            this.currentPage = page
-            this.props.onChange && this.props.onChange(page)
-            this.imagesRef.get(lastPage) && this.imagesRef.get(lastPage)._reset()
+            this.setState({
+                currentPage:page
+            },()=>{
+                this.props.onChange && this.props.onChange(page)
+                this.imagesRef.get(lastPage) && this.imagesRef.get(lastPage)._reset()
+            })
         }
     }
 
