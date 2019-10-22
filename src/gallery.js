@@ -232,6 +232,7 @@ export default class GalleryViewer extends React.Component<GalleryProps> {
             return this.props.renderItem(data, index)
         }
         return <Image style={{width: this.state.containerWidth, height: this.state.containerHeight}}
+                      resizeMode={"contain"}
                       source={{uri: item.url}}/>
     }
 
