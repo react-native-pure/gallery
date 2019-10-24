@@ -2,12 +2,12 @@
 
 import React from 'react'
 import {render} from 'react-native-testing-library'
-import GalleryView from '../index'
+import App from '../Example/App'
 
-describe('GallerView', () => {
+describe('TreeModal', () => {
     it('renders correctly', () => {
         const instance = render(
-            <GalleryView/>
+            <App/>
         );
         expect(instance.toJSON()).toMatchSnapshot();
     });

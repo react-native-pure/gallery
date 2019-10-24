@@ -1,31 +1,3 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`GallerView renders correctly 1`] = `
-<View
-  style={
-    Array [
-      Object {
-        "flex": 1,
-      },
-      Object {},
-    ]
-  }
->
-  <RCTScrollView
-    horizontal={true}
-    nestedScrollEnabled={true}
-    onLayout={[Function]}
-    pagingEnabled={true}
-    scrollEnabled={false}
-    showsHorizontalScrollIndicator={false}
-    showsVerticalScrollIndicator={false}
-    style={
-      Object {
-        "flex": 1,
-      }
-    }
-  >
-    <View />
-  </RCTScrollView>
-</View>
-`;
+exports[`TreeModal renders correctly 1`] = `<View />`;
