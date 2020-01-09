@@ -14,7 +14,9 @@
   "main": "index.js",
   "peerDependencies": {
     "react": ">=16",
-    "react-native": ">=0.47"
+    "react-native": ">=0.47",
+    "@react-native-pure/ibuild-modal": "^1.9.1",
+    "react-native-video": "*"
   },
   "config": {
     "commitizen": {

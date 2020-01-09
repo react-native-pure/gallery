@@ -216,3 +216,30 @@ export const GalleryFileType = {
     video: 1,
 }
 
+
+
+export type ImageListPickerData = {
+    /**
+     * 图片/视频url地址
+     */
+    url: string,
+
+    /**
+     * 数据源类型
+     */
+    type: $Values<typeof GalleryFileType>,
+
+    /**
+     * 视频封面图地址
+     */
+    coverImageUrl?: string,
+
+    /***
+     * 自定义数据
+     */
+    customData?:any,
+    /***
+     * 自动播放
+     */
+    autoPlay?:boolean
+}

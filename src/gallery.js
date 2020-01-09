@@ -2,7 +2,6 @@ import * as React from 'react';
 import {
     View,
     StyleSheet,
-    ScrollView,
     Image,
     FlatList
 } from 'react-native';
