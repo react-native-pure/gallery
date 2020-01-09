@@ -19,7 +19,7 @@ import CachedImage from './basic/CachedImage';
 import {PageModal,NavigationHeader,ActionSheetModal} from "@react-native-pure/ibuild-modal";
 import update from "immutability-helper";
 import GalleryViewer from './gallery';
-import type {ImageListPickerData,GalleryFileType} from "./types";
+import {ImageListPickerData,GalleryFileType} from "./types";
 import {SafeAreaView} from 'react-navigation'
 import type {PageModalProps,ActionSheetModalButton} from "@react-native-pure/ibuild-modal";
 
