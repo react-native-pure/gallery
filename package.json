@@ -22,7 +22,8 @@
     "hoist-non-react-statics": "*",
     "react-native-vector-icons": "*",
     "rn-fetch-blob": ">=0.10.15",
-    "md5": "^2.2.1"
+    "md5": "^2.2.1",
+    "react-native-gesture-responder": "^0.1.1"
   },
   "config": {
     "commitizen": {
@@ -51,9 +52,6 @@
     "react-native-testing-library": "^1.6.1",
     "react-test-renderer": "16.8.3",
     "semantic-release": "^15.13.3"
-  },
-  "dependencies": {
-    "react-native-gesture-responder": "^0.1.1"
   },
   "publishConfig": {
     "access": "public"
