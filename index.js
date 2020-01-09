@@ -1,6 +1,5 @@
-export default require("./src/gallery").default
-
-const GalleryViewrModal =  require("./src/GalleryViewerModal").default
-export GalleryViewrModal;
-
+module.exports = {
+    default: require("./src/gallery").default,
+    GalleryViewrModal: require("./src/GalleryViewerModal").default
+};
 
