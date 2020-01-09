@@ -138,8 +138,10 @@ export default function ( option:VideoSimpleControlOption = {} ) {
 
             /**是否已经下载**/
             checkHasLoad = async () => {
+                debugger
                 if (this.isHttpUrl) {
                     const exists = await RNFetchBlob.fs.exists(this.localFileFullPath)
+                    debugger
                     if (exists) {
                         this.setState({
                             hasLoad: true,
