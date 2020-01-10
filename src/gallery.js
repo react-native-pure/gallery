@@ -3,7 +3,8 @@ import {
     View,
     StyleSheet,
     Image,
-    FlatList
+    FlatList,
+    Platform
 } from 'react-native';
 import {GalleryProps, GalleryFileType} from './types';
 import ZoomView from './zoomView';
@@ -76,6 +77,13 @@ export default class GalleryViewer extends React.Component<GalleryProps> {
         }
     }
 
+    fullUrl = (url)=>{
+        if(!/^http/.test(url) && Platform.OS === 'android' && !/^file:/.test(url)){
+            return 'file://' + url
+        }
+        return  url;
+    }
+
     /**
      * 获取内容size
      * @param dataSource
@@ -85,7 +93,7 @@ export default class GalleryViewer extends React.Component<GalleryProps> {
         if (dataSource) {
             dataSource.forEach(( item, index ) => {
                 if (item.type === GalleryFileType.image) {
-                    Image.getSize(item.url, ( width, height ) => {
+                    Image.getSize(this.fullUrl(item.url), ( width, height ) => {
                         this.contentSize.set(index, {width, height})
                     })
                 }
@@ -225,13 +233,13 @@ export default class GalleryViewer extends React.Component<GalleryProps> {
     renderItem = ( item, index ) => {
         if (this.props.renderItem) {
             let data = Object.assign({}, item)
-            data.source = {uri: item.url};
+            data.source = {uri: this.fullUrl(item.url) };
             data.style = {width: this.state.containerWidth, height: this.state.containerHeight}
             return this.props.renderItem(data, index)
         }
         return <Image style={{width: this.state.containerWidth, height: this.state.containerHeight}}
                       resizeMode="contain"
-                      source={{uri: item.url}}/>
+                      source={{uri: this.fullUrl(item.url)}}/>
     }
 
     renderLodaing = ( item, index ) => {

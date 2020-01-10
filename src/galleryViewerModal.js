@@ -15,7 +15,7 @@ import {
 } from 'react-native';
 import withSimpleControl from './video/withSimpleControl';
 import Video from 'react-native-video';
-import CachedImage from './basic/CachedImage';
+import CachedImage from './basic/cachedImage';
 import {PageModal, NavigationHeader, ActionSheetModal} from "@react-native-pure/ibuild-modal";
 import update from "immutability-helper";
 import GalleryViewer from './gallery';
