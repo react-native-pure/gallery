@@ -3,7 +3,7 @@
  * @author jean.h.ma
  */
 import * as React from "react"
-import {View, StyleSheet, ImageBackground, TouchableWithoutFeedback, Dimensions, ActivityIndicator} from "react-native"
+import {View, StyleSheet, ImageBackground, TouchableOpacity, Dimensions, ActivityIndicator} from "react-native"
 import hoistNonReactStatics from 'hoist-non-react-statics';
 import Icon from "react-native-vector-icons/MaterialIcons"
 import merge from "deepmerge"
@@ -138,10 +138,8 @@ export default function ( option:VideoSimpleControlOption = {} ) {
 
             /**是否已经下载**/
             checkHasLoad = async () => {
-                debugger
                 if (this.isHttpUrl) {
                     const exists = await RNFetchBlob.fs.exists(this.localFileFullPath)
-                    debugger
                     if (exists) {
                         this.setState({
                             hasLoad: true,
@@ -200,7 +198,7 @@ export default function ( option:VideoSimpleControlOption = {} ) {
                     if (this.paused) {
                         return (
                             <View style={[StyleSheet.absoluteFill, styles.buttonContainer]}>
-                                <TouchableWithoutFeedback onPress={() => {
+                                <TouchableOpacity disabled={this.props.disablePlay} onPress={() => {
                                     if (this.state.hasLoad) {
                                         this.setState({status: VideoPlayStatus.play})
                                     } else {
@@ -209,17 +207,17 @@ export default function ( option:VideoSimpleControlOption = {} ) {
                                     }
                                 }}>
                                     <Icon name="play-circle-outline" {...nextOption.icon}></Icon>
-                                </TouchableWithoutFeedback>
+                                </TouchableOpacity>
                             </View>
                         );
                     } else {
                         return (
                             <View style={[StyleSheet.absoluteFill, styles.buttonContainer]}>
-                                <TouchableWithoutFeedback onPress={() => {
+                                <TouchableOpacity disabled={this.props.disablePlay} onPress={() => {
                                     this.setState({status: VideoPlayStatus.pause})
                                 }}>
                                     <Icon name="pause-circle-outline" {...nextOption.icon}></Icon>
-                                </TouchableWithoutFeedback>
+                                </TouchableOpacity>
                             </View>
                         );
                     }

@@ -42,7 +42,19 @@ export type GalleryViewerProps = {
     /**
      *
      */
-    imageResizeMode?:ImageResizeMode
+    imageResizeMode?:ImageResizeMode,
+
+    /**
+     * 点击回调
+     * @param index
+     */
+    onPress?:(index:number)=>void,
+
+    /**
+     * 禁用播放
+     */
+    disablePlay:boolean
+
 }
 
 export default class GalleryViewer extends React.PureComponent <GalleryViewerProps> {
@@ -52,7 +64,8 @@ export default class GalleryViewer extends React.PureComponent <GalleryViewerPro
         title: "查看详情",
         data: [],
         showIndicator: true,
-        imageResizeMode: 'contain'
+        imageResizeMode: 'contain',
+        disablePlay:false
     };
 
     constructor( props ) {
@@ -197,6 +210,7 @@ export default class GalleryViewer extends React.PureComponent <GalleryViewerPro
                                      Alert.alert("播放失败，" + error.code)
                                  }
                              }}
+                             disablePlay={this.props.disablePlay}
                 />
             );
         }
@@ -224,6 +238,9 @@ export default class GalleryViewer extends React.PureComponent <GalleryViewerPro
                      onPress={( index ) => {
                          if (this.videoViews.get(index)) {
                              this.videoViews.get(index).toggleControl && this.videoViews.get(index).toggleControl()
+                         }
+                         if(this.props.onPress){
+                             this.props.onPress(index);
                          }
                      }}
                      renderFooter={this.renderFooter}
