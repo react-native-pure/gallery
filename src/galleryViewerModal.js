@@ -11,19 +11,15 @@ import {
     Text,
     StyleSheet,
     ActivityIndicator,
-    Alert
+    Alert, ImageResizeMode
 } from 'react-native';
-import withSimpleControl from './video/withSimpleControl';
-import Video from 'react-native-video';
-import CachedImage from './basic/cachedImage';
 import {PageModal, NavigationHeader, ActionSheetModal} from "@react-native-pure/ibuild-modal";
 import update from "immutability-helper";
-import GalleryViewer from './gallery';
+import GalleryViewer from './galleryViewer';
 import {ImageListPickerData, GalleryFileType} from "./types";
 import {SafeAreaView} from 'react-navigation'
 import type {PageModalProps, ActionSheetModalButton} from "@react-native-pure/ibuild-modal";
 
-const VideoPlayer = withSimpleControl()(Video)
 
 type Action = ActionSheetModalButton & {
     onPress:( data:ImageListPickerData )=>{}
@@ -49,6 +45,11 @@ export type GalleryViewerModalProps = {
      */
     longPressThreshold?:number,
 
+    /**
+     *
+     */
+    imageResizeMode?:ImageResizeMode,
+
 
 } & PageModalProps
 
@@ -69,19 +70,13 @@ export default class GalleryViewerModal extends React.PureComponent <GalleryView
         super(props);
         this.videoViews = new Map();
         this.state = {
-            hiddenIndicator: [],
-            errors: [],
             currentIndex: props.initIndex,
             showLongPressAction: false,
-            dataSource:[],
+            dataSource: [],
             /**异步加载数据中*/
-            loadingAsyncData:false
+            loadingAsyncData: false
 
         }
-        this.renderFooter = this.renderFooter.bind(this)
-        this.renderHeader = this.renderHeader.bind(this)
-        this.renderItem = this.renderItem.bind(this)
-        this.renderSpinder = this.renderSpinder.bind(this)
     }
 
     async componentWillReceiveProps( nextProps:Readonly<P>, nextContext:any ):void {
@@ -94,13 +89,13 @@ export default class GalleryViewerModal extends React.PureComponent <GalleryView
             if (typeof nextProps.data === 'function') {
 
                 this.setState({
-                    loadingAsyncData:true,
-                    dataSource:[]
+                    loadingAsyncData: true,
+                    dataSource: []
                 })
                 const data = await nextProps.data()
                 this.setState({
                     dataSource: data,
-                    loadingAsyncData:false
+                    loadingAsyncData: false
                 })
             } else {
                 this.setState({
@@ -127,40 +122,6 @@ export default class GalleryViewerModal extends React.PureComponent <GalleryView
         return []
     }
 
-    onLoadStart( index ) {
-        this.setState(update(this.state, {
-            hiddenIndicator: {
-                [index]: {$set: false}
-            },
-            errors: {
-                [index]: {$set: null}
-            }
-        }))
-    }
-
-    onLoad( index ) {
-        this.setState(update(this.state, {
-            hiddenIndicator: {
-                [index]: {$set: true}
-            },
-            errors: {
-                [index]: {$set: null}
-            }
-        }))
-    }
-
-
-    onError( index, error ) {
-        this.setState(update(this.state, {
-            hiddenIndicator: {
-                [index]: {$set: true}
-            },
-            errors: {
-                [index]: {$set: error}
-            }
-        }))
-    }
-
     renderNavBar() {
         return (
             <View style={styles.navContainer}>
@@ -185,101 +146,6 @@ export default class GalleryViewerModal extends React.PureComponent <GalleryView
         )
     }
 
-    renderFooter( index ) {
-        if (this.props.renderFooter) {
-            return this.props.renderFooter(index)
-        }
-        return <Text style={{
-            color: '#fff',
-            flexWrap: 'wrap',
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: 'rgba(0,0,0,0)',
-            paddingHorizontal: 15,
-            fontSize: 18,
-        }}>{`${index + 1}/${this.props.data.length}`}</Text>
-    }
-
-    renderHeader( index ) {
-        if (this.props.renderHeader) {
-            return this.props.renderHeader(index)
-        }
-        return null;
-    }
-
-    renderSpinder( data, index ) {
-        if (this.props.showIndicator && (this.state.loadingAsyncData || data.type === GalleryFileType.image && !this.state.hiddenIndicator[index])) {
-            if (this.props.renderIndicator) {
-                return this.props.renderIndicator(data, index)
-            }
-            return (
-                <View style={styles.spinder}>
-                    <View style={styles.spinderContainer}>
-                        <ActivityIndicator color="#fff"/>
-                        <Text style={[{color: '#fff', backgroundColor: "transparent"}]}>加载中...</Text>
-                    </View>
-                </View>
-            )
-        }
-        return null;
-    }
-
-    renderItem( item, index ) {
-        if (!this.props.visible) {
-            return null
-        }
-        if (this.state.errors[index] && this.props.renderError) {
-            return this.props.renderError(index, this.state.errors[index], item)
-        }
-        if (item.type === GalleryFileType.image) {
-            return (
-                <CachedImage
-                    source={item.source}
-                    style={item.style}
-                    resizeMode={'contain'}
-                    onLoadStart={() => {
-                        this.onLoadStart(index)
-                    }}
-                    onLoadEnd={() => {
-                        this.onLoad(index)
-                    }}
-                    onError={( error ) => {
-                        this.onError(index, error)
-                        this.props.onError && this.props.onError(index, error, item)
-                    }}
-                />
-            )
-        } else if (item.type == GalleryFileType.video) {
-            return (
-                <VideoPlayer paused={!item.autoPlay}
-                             poster={item.coverImageUrl}
-                             source={{uri: item.url}}
-                             style={item.style}
-                             handleHorizontalOuterRangeOffset={x => {
-                                 this.imageViewer && this.imageViewer._scrollToX(x)
-                             }}
-                             swipeToLeft={() => {
-                                 this.imageViewer && this.imageViewer._scrollToIndex(this.state.currentIndex - 1)
-                             }}
-                             swipeToRight={() => {
-                                 this.imageViewer && this.imageViewer._scrollToIndex(this.state.currentIndex + 1)
-                             }}
-                             controlRef={refs => {
-                                 this.videoViews.set(index, refs)
-                             }}
-                             onError={( {error} ) => {
-                                 if (this.props.onError) {
-                                     this.props.onError(index, error)
-                                 } else {
-                                     Alert.alert("播放失败，" + error.code)
-                                 }
-                             }}
-                />
-            );
-        }
-        return null
-    }
-
     render() {
         return (
             <PageModal visible={this.props.visible}
@@ -289,36 +155,19 @@ export default class GalleryViewerModal extends React.PureComponent <GalleryView
                        transition={this.props.transition}
                        onRequestClose={this.props.onRequestClose}>
                 <SafeAreaView style={[{flex: 1, backgroundColor: '#000'}, this.props.style]}>
-                    <GalleryViewer dataSource={this.state.dataSource}
-                                   initIndex={this.props.initIndex}
-                                   ref={( refs ) => {
-                                       this.imageViewer = refs
-                                   }}
-                                   longPressThreshold={this.props.longPressThreshold}
-                                   onChange={( index ) => {
-                                       this.props.onChange && this.props.onChange(index, this.state.dataSource[index])
-                                       if (this.videoViews.get(this.state.currentIndex)) {
-                                           this.videoViews.get(this.state.currentIndex).stop && this.videoViews.get(this.state.currentIndex).stop()
-                                       }
+                    <GalleryViewer {...this.props}
+                                   dataSource={this.state.dataSource}
+                                   onChange={( index, data ) => {
                                        this.setState({
                                            currentIndex: index
                                        })
+                                       this.props.onChange && this.props.onChange(index, data)
                                    }}
-                                   onPress={( index ) => {
-                                       if (this.videoViews.get(index)) {
-                                           this.videoViews.get(index).toggleControl && this.videoViews.get(index).toggleControl()
-                                       }
-                                   }}
-                                   renderFooter={this.renderFooter}
-                                   renderHeader={this.renderHeader}
-                                   renderItem={this.renderItem}
-                                   renderIndicator={this.renderSpinder}
-                                   onLongPress={this.props.longPressActions ? () => {
+                                   longPressActions={this.props.longPressActions ? () => {
                                        this.setState({
                                            showLongPressAction: true
                                        })
-                                   } : null}
-                    />
+                                   } : null}/>
                     {this.renderNavBar()}
                 </SafeAreaView>
                 <ActionSheetModal buttons={this.longPressActions}

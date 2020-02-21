@@ -12,7 +12,7 @@ import Scroller from './scroll/scroller';
 
 const MIN_FLING_VELOCITY = 0.5;
 
-export default class GalleryViewer extends React.Component<GalleryProps> {
+export default class Gallery extends React.Component<GalleryProps> {
 
     static defaultProps = {
         style: {},
@@ -20,7 +20,8 @@ export default class GalleryViewer extends React.Component<GalleryProps> {
         maxScale: 2.5,
         minScale: 1,
         zoomEnable: true,
-        enableDoubleClickZoom: true
+        enableDoubleClickZoom: true,
+        imageResizeMode:'contain'
     }
 
     constructor( props ) {
@@ -238,7 +239,7 @@ export default class GalleryViewer extends React.Component<GalleryProps> {
             return this.props.renderItem(data, index)
         }
         return <Image style={{width: this.state.containerWidth, height: this.state.containerHeight}}
-                      resizeMode="contain"
+                      resizeMode={this.props.imageResizeMode}
                       source={{uri: this.fullUrl(item.url)}}/>
     }
 

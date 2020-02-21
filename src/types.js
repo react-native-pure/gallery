@@ -1,4 +1,4 @@
-import {Image, ImageURISource, Text, View, ViewStyle} from 'react-native';
+import {Image, ImageResizeMode, ImageURISource, Text, View, ViewStyle} from 'react-native';
 
 export type GalleryProps = {
 
@@ -86,9 +86,12 @@ export type GalleryProps = {
     /***
      * 长按的时长，单位毫秒
      */
-    longPressThreshold?:number
+    longPressThreshold?:number,
 
-
+    /**
+     *
+     */
+    imageResizeMode?:ImageResizeMode,
 }
 
 
