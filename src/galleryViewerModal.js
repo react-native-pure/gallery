@@ -13,13 +13,12 @@ import {
     ActivityIndicator,
     Alert, ImageResizeMode
 } from 'react-native';
-import {PageModal, NavigationHeader, ActionSheetModal} from "@react-native-pure/ibuild-modal";
-import update from "immutability-helper";
+import {PageModal, ActionSheetModal} from "@react-native-pure/ibuild-modal";
 import GalleryViewer from './galleryViewer';
-import {ImageListPickerData, GalleryFileType} from "./types";
+import {ImageListPickerData} from "./types";
 import {SafeAreaView} from 'react-navigation'
 import type {PageModalProps, ActionSheetModalButton} from "@react-native-pure/ibuild-modal";
-
+import Header from './basic/header';
 
 type Action = ActionSheetModalButton & {
     onPress:( data:ImageListPickerData )=>{}
@@ -123,27 +122,11 @@ export default class GalleryViewerModal extends React.PureComponent <GalleryView
     }
 
     renderNavBar() {
-        return (
-            <View style={styles.navContainer}>
-                <NavigationHeader hiddenRight={true}
-                                  title={this.props.title}
-                                  navbarStyle={{
-                                      container: {
-                                          backgroundColor: 'rgba(0,0,0,0)'
-                                      },
-                                      leftButton: {
-                                          tintColor: '#fff'
-                                      },
-                                      title: {
-                                          fontSize: 18,
-                                          color: 'white'
-                                      }
-                                  }}
-                                  onPressLeft={() => {
-                                      this.props.onRequestClose && this.props.onRequestClose()
-                                  }}/>
-            </View>
-        )
+        return <Header title={this.props.title}
+                       hiddenRight={true}
+                       onClose={()=>{
+                           this.props.onRequestClose && this.props.onRequestClose()
+                       }}/>
     }
 
     render() {
@@ -155,6 +138,7 @@ export default class GalleryViewerModal extends React.PureComponent <GalleryView
                        transition={this.props.transition}
                        onRequestClose={this.props.onRequestClose}>
                 <SafeAreaView style={[{flex: 1, backgroundColor: '#000'}, this.props.style]}>
+                    {this.renderNavBar()}
                     <GalleryViewer {...this.props}
                                    dataSource={this.state.dataSource}
                                    onChange={( index, data ) => {
@@ -168,7 +152,6 @@ export default class GalleryViewerModal extends React.PureComponent <GalleryView
                                            showLongPressAction: true
                                        })
                                    } : null}/>
-                    {this.renderNavBar()}
                 </SafeAreaView>
                 <ActionSheetModal buttons={this.longPressActions}
                                   visible={this.state.showLongPressAction}
