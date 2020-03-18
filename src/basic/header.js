@@ -38,7 +38,7 @@ export default React.memo<HeaderProps>(( props ) => {
             {!hiddenRight && !!renderRight && renderRight()}
             {!hiddenRight && !renderRight &&
             <Text style={[styles.right, headerRightStyle]} onPress={onConfirm}>确定</Text>}
-            {hiddenRight && <View/>}
+            {hiddenRight && <View style={[styles.right, headerRightStyle]}/>}
         </View>
     )
 })
@@ -55,7 +55,6 @@ const styles = StyleSheet.create({
         }),
         flexDirection: 'row',
         justifyContent: 'space-between',
-        paddingHorizontal: 12,
         alignItems: 'center'
     },
     title: {
@@ -64,10 +63,14 @@ const styles = StyleSheet.create({
     },
     left: {
         color: '#fff',
-        fontSize: 15
+        fontSize: 15,
+        paddingHorizontal:12,
+        paddingVertical:15
     },
     right: {
         color: '#fff',
-        fontSize: 15
+        fontSize: 15,
+        paddingHorizontal:12,
+        paddingVertical:15
     }
 })
