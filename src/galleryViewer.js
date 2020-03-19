@@ -211,6 +211,7 @@ export default class GalleryViewer extends React.PureComponent <GalleryViewerPro
                                  }
                              }}
                              disablePlay={this.props.disablePlay}
+                             resizeMode={this.props.imageResizeMode}
                 />
             );
         }
