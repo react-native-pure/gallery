@@ -235,7 +235,7 @@ export default function ( option:VideoSimpleControlOption = {} ) {
                     props.resizeMode = "contain"
                 }
                 return (
-                    <View style={[styles.poster]}
+                    <View style={[styles.poster,this.props.style]}
                           onLayout={this._onReadyContainerLayout}>
                         <ImageBackground style={[styles.posterImage]} {...props}>
                             {this._renderPlayButton()}
@@ -254,7 +254,7 @@ export default function ( option:VideoSimpleControlOption = {} ) {
                     props.resizeMode = "contain"
                 }
                 return (
-                    <View style={[styles.poster]}
+                    <View style={[styles.poster,this.props.style]}
                           onLayout={this._onReadyContainerLayout}>
                         <ImageBackground style={[styles.posterImage]} {...props}>
                             <ActivityIndicator color={'#fff'} size="large"/>
